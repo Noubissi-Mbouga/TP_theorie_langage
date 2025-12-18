@@ -1,37 +1,35 @@
 name: Build Windows EXE
 
-on: [push] # Se lance à chaque fois que vous faites un 'git push'
+on: [push]
 
 jobs:
   build:
-    runs-on: windows-latest # On utilise un vrai Windows !
+    runs-on: windows-latest
 
     steps:
     - name: Checkout code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4 # Mis à jour de v3 à v4
 
     - name: Install Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5 # Mis à jour de v4 à v5
       with:
         python-version: '3.10'
 
-    - name: Install Graphviz (Binaire Windows)
+    - name: Install Graphviz
       run: choco install graphviz -y
 
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install PyQt6 pyinstaller
-        # Ajoutez ici vos autres bibliothèques (ex: pip install pandas)
-        if (Test-Path requirements.txt) { pip install -r requirements.txt }
+        # Si vous avez d'autres librairies, ajoutez-les ici
 
     - name: Build EXE with PyInstaller
       run: |
-        pyinstaller --onefile --windowed --add-binary "C:/Program Files/Graphviz/bin/*;graphviz_bin" interface.py
-      # Note : L'option --add-binary aide à inclure Graphviz si votre code le cherche localement
+        pyinstaller --onefile --windowed interface.py
 
     - name: Upload Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4 # C'est ICI que l'erreur se trouvait (v3 -> v4)
       with:
         name: MonApplicationWindows
         path: dist/interface.exe
