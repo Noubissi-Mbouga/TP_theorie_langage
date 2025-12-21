@@ -4,7 +4,6 @@ import sys
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
     QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
 from PyQt6.QtCore import Qt
-from verifier_grammaire import verifier_mot
 from verifier import appartient_grammaire_reguliere
 import os
 
