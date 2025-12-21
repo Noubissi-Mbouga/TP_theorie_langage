@@ -1,5 +1,4 @@
 #!/usr/bin/python3
-
 import sys
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
     QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
