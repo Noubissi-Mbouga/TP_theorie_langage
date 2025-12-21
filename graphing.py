@@ -1,12 +1,4 @@
 # mycompiler/graphing.py
-from graphviz import Digraph
-
-class Automate:
-    def __init__(self):
-        self.states = set()
-        self.start_state = None
-        self.final_states = set()
-        self.transitions = {}
 
 
 def grammaire_vers_automate(regle, axiome):
@@ -77,3 +69,4 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
