@@ -5,8 +5,6 @@ import os
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
 QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
 from PyQt6.QtCore import Qt
-from graphing import draw_dfa
-from graphing import grammaire_vers_automate
 from verifier import appartient_grammaire_reguliere
 from PyQt6.QtGui import QIcon
 from PyQt6.QtCore import QSize
@@ -60,7 +58,7 @@ def setup_graphviz():
 
 setup_graphviz()
 from graphing import *
-
+from graphing import draw_dfa
 
 
 class GrammarCheckerGUI(QMainWindow):
