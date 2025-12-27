@@ -1,4 +1,5 @@
 # mycompiler/graphing.py
+from graphviz import Digraph
 class Automate:
     def __init__(self):
         self.states = set()
@@ -75,6 +76,7 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
 
 
 
