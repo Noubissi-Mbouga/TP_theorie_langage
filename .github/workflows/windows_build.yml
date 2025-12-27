@@ -24,10 +24,21 @@ jobs:
         pip install PyQt6 pyinstaller
         # Si vous avez d'autres librairies, ajoutez-les ici
 
+    - name: Install Graphviz
+      run: choco install graphviz -y
+
     - name: Build EXE with PyInstaller
       run: |
-        pyinstaller --onefile --windowed interface.py
-
+        # On définit le chemin vers les binaires de Graphviz installés par Chocolatey
+        $GRAPHVIZ_DOT = "C:/Program Files/Graphviz/bin/dot.exe"
+        $GRAPHVIZ_BIN_DIR = "C:/Program Files/Graphviz/bin"
+        
+        # On utilise --add-binary pour inclure tout le dossier bin de Graphviz
+        # Syntaxe Windows pour PyInstaller : "source;destination_interne"
+        pyinstaller --onefile --windowed `
+          --add-binary "C:/Program Files/Graphviz/bin/*.exe;graphviz_bin" `
+          --add-binary "C:/Program Files/Graphviz/bin/*.dll;graphviz_bin" `
+          interface.py
     - name: Upload Artifact
       uses: actions/upload-artifact@v4 # C'est ICI que l'erreur se trouvait (v3 -> v4)
       with:
