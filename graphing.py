@@ -1,5 +1,18 @@
 # mycompiler/graphing.py
+def setup_graphviz():
+    if getattr(sys, 'frozen', False):
+        # mode exécutable
+        base_path = os.path.dirname(sys.executable)
+    else:
+        # mode script python
+        base_path = os.path.abspath(".")
 
+    graphviz_bin = os.path.join(base_path, "graphviz", "bin")
+    os.environ["PATH"] += os.pathsep + graphviz_bin
+
+setup_graphviz()
+
+from graphing import *
 
 def grammaire_vers_automate(regle, axiome):
     auto = Automate()
@@ -69,4 +82,5 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
 
