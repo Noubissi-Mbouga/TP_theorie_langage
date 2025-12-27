@@ -14,6 +14,13 @@ from PyQt6 import QtGui
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QPalette, QColor
 
+if getattr(sys, 'frozen', False):
+    # On indique à l'application où trouver dot.exe (dans le dossier temporaire)
+    os.environ["PATH"] += os.pathsep + os.path.join(sys._MEIPASS, 'graphviz_bin')
+
+# Ensuite seulement, tu importes tes fonctions
+from graphing import draw_nfa, draw_dfa
+
 def formatter_regle(Rule):
     regle={}
     rule = Rule.split()
@@ -45,24 +52,7 @@ def set_blue_theme(app):
     palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
 
     app.setPalette(palette)
-
-def setup_graphviz_path():
-    if getattr(sys, 'frozen', False):
-        # Chemin interne où PyInstaller extrait les fichiers (dossier temporaire)
-        base_path = sys._MEIPASS
-        graphviz_bin_path = os.path.join(base_path, 'graphviz_bin')
-        
-        # On ajoute ce dossier au PATH du système pour cette session
-        os.environ["PATH"] += os.pathsep + graphviz_bin_path
-        
-        # Optionnel : Vérifier si dot.exe est bien là
-        dot_path = os.path.join(graphviz_bin_path, 'dot.exe')
-        if not os.path.exists(dot_path):
-            print(f"Erreur: dot.exe non trouvé dans {graphviz_bin_path}")
-
-# Appeler la fonction au démarrage
-setup_graphviz_path()
-from graphing import *
+*
 
 
 class GrammarCheckerGUI(QMainWindow):
