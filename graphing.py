@@ -1,20 +1,4 @@
 # mycompiler/graphing.py
-import sys
-import os 
-def setup_graphviz():
-    if getattr(sys, 'frozen', False):
-        # mode exécutable
-        base_path = os.path.dirname(sys.executable)
-    else:
-        # mode script python
-        base_path = os.path.abspath(".")
-
-    graphviz_bin = os.path.join(base_path, "graphviz", "bin")
-    os.environ["PATH"] += os.pathsep + graphviz_bin
-
-setup_graphviz()
-from graphviz import Digraph
-
 class Automate:
     def __init__(self):
         self.states = set()
@@ -91,6 +75,7 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
 
 
 
