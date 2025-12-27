@@ -12,44 +12,6 @@ def setup_graphviz():
 
 setup_graphviz()
 
-from graphing import *
-
-def grammaire_vers_automate(regle, axiome):
-    auto = Automate()
-    auto.start_state = axiome
-
-    # Ajouter les états
-    for A in regle:
-        auto.states.add(A)
-
-    # Ajouter un état final unique F
-    auto.states.add("F")
-    auto.final_states.add("F")
-
-    for A, productions in regle.items():
-        for prod in productions:
-
-            if prod in ("epsilon", "ε"):
-                # A est un état final
-                auto.final_states.add(A)
-                continue
-            
-            if len(prod) == 1:
-                # A -> a
-                sym = prod
-                auto.transitions.setdefault(A, {})
-                auto.transitions[A][sym] = "F"
-
-            elif len(prod) == 2:
-                # A -> aB
-                sym = prod[0]
-                B = prod[1]
-                auto.transitions.setdefault(A, {})
-                auto.transitions[A][sym] = B
-
-    return auto
-
-
 def draw_nfa(nfa, filename="nfa"):
     dot = Digraph(comment="NFA", format="png")
     dot.attr(rankdir='LR')
@@ -82,5 +44,6 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
 
 
