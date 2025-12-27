@@ -58,7 +58,6 @@ def setup_graphviz():
 
 setup_graphviz()
 from graphing import *
-from graphing import draw_dfa
 
 
 class GrammarCheckerGUI(QMainWindow):
