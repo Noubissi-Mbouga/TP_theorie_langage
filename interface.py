@@ -1,10 +1,51 @@
 #!/usr/bin/python3
+
 import sys
-from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
-    QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
-from PyQt6.QtCore import Qt
-from verifier import appartient_grammaire_reguliere
 import os
+from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
+QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
+from PyQt6.QtCore import Qt
+from graphing import draw_dfa
+from graphing import grammaire_vers_automate
+from verifier import appartient_grammaire_reguliere
+from PyQt6.QtGui import QIcon
+from PyQt6.QtCore import QSize
+from PyQt6.QtWidgets import QStyleFactory
+from PyQt6 import QtGui
+from PyQt6.QtGui import QPixmap
+from PyQt6.QtGui import QPalette, QColor
+
+def formatter_regle(Rule):
+    regle={}
+    rule = Rule.split()
+    new,n= [],[]
+    for i in range(len(rule)):
+        new=rule[i].split('->')
+        n = new[1].split('|')
+        regle[new[0]] = n
+    return regle
+
+
+def set_blue_theme(app):
+    palette = QPalette()
+
+    # Fond général
+    palette.setColor(QPalette.ColorRole.Window, QColor(235, 242, 255))
+    palette.setColor(QPalette.ColorRole.WindowText, Qt.GlobalColor.black)
+
+    # Zones de texte
+    palette.setColor(QPalette.ColorRole.Base, QColor(255, 255, 255))
+    palette.setColor(QPalette.ColorRole.Text, Qt.GlobalColor.black)
+
+    # Boutons
+    palette.setColor(QPalette.ColorRole.Button, QColor(210, 225, 255))
+    palette.setColor(QPalette.ColorRole.ButtonText, Qt.GlobalColor.black)
+
+    # Sélections
+    palette.setColor(QPalette.ColorRole.Highlight, QColor(70, 130, 200))
+    palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
+
+    app.setPalette(palette)
 
 def setup_graphviz():
     if getattr(sys, 'frozen', False):
@@ -21,27 +62,11 @@ setup_graphviz()
 
 
 
-from graphing import *
-
-
-global regle 
-global ax_depart
-
-def formatter_regle(Rule):
-    regle={}
-    rule = Rule.split()
-    new,n= [],[]
-    for i in range(len(rule)):
-        new=rule[i].split('->')
-        n = new[1].split('|')
-        regle[new[0]] = n
-    return regle
-
 class GrammarCheckerGUI(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
-    
+        
     def initUI(self):
         self.setWindowTitle("Verificateur de grammaire")
         self.setGeometry(100,100,800,600)
@@ -187,65 +212,50 @@ class GrammarCheckerGUI(QMainWindow):
             axiom = self.axiom_input.text().strip()
             rules_text = self.rules_input.toPlainText().strip()
 
-            if not all([variables, alphabet, rules_text,axiom]):
+            if not all([variables, alphabet, rules_text, axiom]):
                 QMessageBox.warning(self, "Erreur", "Tous les champs doivent etre remplis")
                 return
-            
-            # stockage de grammaire
-            self.grammar = {
-                'variables' : variables,
-                'alphabet' : alphabet,
-                'rules' : rules_text,
-                'axiom' : axiom
-            }
 
-            regle = formatter_regle(rules_text)
-            ax_depart = axiom
-            print(regle)
-            automate = grammaire_vers_automate(regle, ax_depart)
+            # construction correcte de la grammaire
+            self.regle = formatter_regle(rules_text)
+            self.ax_depart = axiom
+
+            # génération automate
+            automate = grammaire_vers_automate(self.regle, self.ax_depart)
             image_path = draw_dfa(automate, filename="automate")
-            print("Image générée :", image_path)
 
-
-            print(appartient_grammaire_reguliere("ababab",regle,ax_depart))  # True
-            print(appartient_grammaire_reguliere("abbaabba",regle,ax_depart))  # False
-
-            #mise a jour de l'affichage
+            # affichage
             self.grammar_display.setHtml(f'<img src="{image_path}">')
-            #display_text = f"variables: {variables}\n"
-            #display_text += f"alphabet: {alphabet}\n"
-            #display_text += f"Axiome: {axiom}\n"
-            #self.grammar_display.setPlainText(display_text)
-            QMessageBox.information(self,"Succes", "Grammaire sauvegarde")
-        except Exception as e:
-            QMessageBox.critical(self,"Erreur",f"Erreur lors de la sauvegarde: {str(e)}")
 
+            QMessageBox.information(self, "Succes", "Grammaire sauvegardee")
+
+        except Exception as e:
+            QMessageBox.critical(self, "Erreur", f"Erreur lors de la sauvegarde: {str(e)}")
 
     def check_word(self):
-        if not hasattr(self, 'grammar'):
+        if not hasattr(self, 'regle') or not hasattr(self, 'ax_depart'):
             QMessageBox.warning(self, "Erreur", "Veuillez d'abord definir une grammaire")
             return
-       
+
         word = self.word_input.text().strip()
         if not word:
-            QMessageBox.warning(self,"Erreur","veuillez entrer un mot a verifier")
+            QMessageBox.warning(self, "Erreur", "Veuillez entrer un mot a verifier")
             return
-        # code concernant la logique pour tester si un mot appartient a la grammaire
-        regle = formatter_regle(self.rules_input.toPlainText().strip())
-        ax_depart = self.axiom_input.text().strip()
-        result = appartient_grammaire_reguliere(word,regle,ax_depart)
-        # le resultat sera affiche de la maniere suivante self.result_label.setText()
+
+        # verification
+        result = appartient_grammaire_reguliere(word, self.regle, self.ax_depart)
+
+        # affichage du resultat
         if result:
             self.result_label.setText("Ce mot appartient a la grammaire")
         else:
             self.result_label.setText("Ce mot n'appartient pas a la grammaire")
-        # on pourra aussi set un stylesheet
-
-
-
+            
+            
 def main():
     app = QApplication(sys.argv)
     app.setStyle("Fusion")
+    set_blue_theme(app)
     window = GrammarCheckerGUI()
     window.show()
     sys.exit(app.exec())
