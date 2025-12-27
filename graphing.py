@@ -13,6 +13,7 @@ def setup_graphviz():
     os.environ["PATH"] += os.pathsep + graphviz_bin
 
 setup_graphviz()
+from graphviz import Digraph
 
 class Automate:
     def __init__(self):
@@ -90,6 +91,7 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
 
 
 
