@@ -59,6 +59,7 @@ def setup_graphviz():
     os.environ["PATH"] += os.pathsep + graphviz_bin
 
 setup_graphviz()
+from graphing import *
 
 
 
