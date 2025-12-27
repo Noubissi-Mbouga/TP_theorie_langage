@@ -1,4 +1,6 @@
 # mycompiler/graphing.py
+import sys
+import os 
 def setup_graphviz():
     if getattr(sys, 'frozen', False):
         # mode exécutable
@@ -44,6 +46,7 @@ def draw_dfa(dfa, filename="dfa"):
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
     return path
+
 
 
 
