@@ -2,6 +2,7 @@
 
 import sys
 import os
+import shutil
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
 QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
 from PyQt6.QtCore import Qt
@@ -45,18 +46,22 @@ def set_blue_theme(app):
 
     app.setPalette(palette)
 
-def setup_graphviz():
+def setup_graphviz_path():
     if getattr(sys, 'frozen', False):
-        # mode exécutable
-        base_path = os.path.dirname(sys.executable)
-    else:
-        # mode script python
-        base_path = os.path.abspath(".")
+        # Chemin interne où PyInstaller extrait les fichiers (dossier temporaire)
+        base_path = sys._MEIPASS
+        graphviz_bin_path = os.path.join(base_path, 'graphviz_bin')
+        
+        # On ajoute ce dossier au PATH du système pour cette session
+        os.environ["PATH"] += os.pathsep + graphviz_bin_path
+        
+        # Optionnel : Vérifier si dot.exe est bien là
+        dot_path = os.path.join(graphviz_bin_path, 'dot.exe')
+        if not os.path.exists(dot_path):
+            print(f"Erreur: dot.exe non trouvé dans {graphviz_bin_path}")
 
-    graphviz_bin = os.path.join(base_path, "graphviz", "bin")
-    os.environ["PATH"] += os.pathsep + graphviz_bin
-
-setup_graphviz()
+# Appeler la fonction au démarrage
+setup_graphviz_path()
 from graphing import *
 
 
