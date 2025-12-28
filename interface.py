@@ -214,7 +214,7 @@ class GrammarCheckerGUI(QMainWindow):
 
             # génération automate
             filename = "automate_genere"
-            automate = grammaire_vers_automate(regle, ax_depart)
+            automate = grammaire_vers_automate(self.regle, self.ax_depart)
             image_path = draw_dfa(automate, filename=filename)
 
             # Vérification si le fichier a bien été créé
