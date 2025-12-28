@@ -2,17 +2,16 @@
 import os
 import sys
 
+# On crée une variable globale pour le chemin de DOT
+DOT_EXE = "dot" # Par défaut si installé sur le PC
+
 if getattr(sys, 'frozen', False):
-    base_path = sys._MEIPASS
-    bin_path = os.path.join(base_path, 'graphviz_bin')
-    lib_path = os.path.join(base_path, 'graphviz_lib')
-    
-    # 1. On ajoute les binaires au PATH
-    os.environ["PATH"] = bin_path + os.pathsep + os.environ["PATH"]
-    
-    # 2. TRÈS IMPORTANT : On dit à Graphviz où sont ses plugins
-    # Sans ça, dot.exe se lance mais ne peut pas écrire de fichier (NoneType)
-    os.environ["GV_LIBRARY_PATH"] = lib_path
+    bin_dir = os.path.join(sys._MEIPASS, 'graphviz_bin')
+    os.environ["PATH"] = bin_dir + os.pathsep + os.environ["PATH"]
+    # On force le chemin absolu vers l'exécutable embarqué
+    DOT_EXE = os.path.join(bin_dir, "dot.exe")
+
+# Passe cette variable à tes fonctions de dessin si nécessaire
 
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
 QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
