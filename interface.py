@@ -1,13 +1,18 @@
 #!/usr/bin/python3
-
-import sys
 import os
-import shutil
+import sys
+
 if getattr(sys, 'frozen', False):
-    # On définit le chemin vers les binaires inclus dans l'EXE
-    graphviz_bin_path = os.path.join(sys._MEIPASS, 'graphviz_bin')
-    # On l'ajoute au début du PATH pour être prioritaire
-    os.environ["PATH"] = graphviz_bin_path + os.pathsep + os.environ["PATH"]
+    base_path = sys._MEIPASS
+    bin_path = os.path.join(base_path, 'graphviz_bin')
+    lib_path = os.path.join(base_path, 'graphviz_lib')
+    
+    # 1. On ajoute les binaires au PATH
+    os.environ["PATH"] = bin_path + os.pathsep + os.environ["PATH"]
+    
+    # 2. TRÈS IMPORTANT : On dit à Graphviz où sont ses plugins
+    # Sans ça, dot.exe se lance mais ne peut pas écrire de fichier (NoneType)
+    os.environ["GV_LIBRARY_PATH"] = lib_path
 
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
 QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
