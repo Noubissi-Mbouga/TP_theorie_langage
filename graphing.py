@@ -59,7 +59,7 @@ def draw_nfa(nfa, filename="nfa"):
         for sym, dests in nfa.transitions.get(s, {}).items():
             for d in sorted(dests):
                 dot.edge(s, d, label=sym)
-    path = dot.render(filename, cleanup=True)
+    path = dot.render(filename, format="png", cleanup=True)
     print(path)
     return path
 
@@ -75,9 +75,10 @@ def draw_dfa(dfa, filename="dfa"):
     for s, trans in dfa.transitions.items():
         for sym, tgt in trans.items():
             dot.edge(s, tgt, label=sym)
-    path = dot.render(filename, cleanup=True)
+    path = dot.render(filename, format="png", cleanup=True)
     print(path)
     return path
+
 
 
 
