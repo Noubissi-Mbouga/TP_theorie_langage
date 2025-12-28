@@ -60,6 +60,7 @@ def draw_nfa(nfa, filename="nfa"):
             for d in sorted(dests):
                 dot.edge(s, d, label=sym)
     path = dot.render(filename, cleanup=True)
+    print(path)
     return path
 
     
@@ -75,7 +76,9 @@ def draw_dfa(dfa, filename="dfa"):
         for sym, tgt in trans.items():
             dot.edge(s, tgt, label=sym)
     path = dot.render(filename, cleanup=True)
+    print(path)
     return path
+
 
 
 
