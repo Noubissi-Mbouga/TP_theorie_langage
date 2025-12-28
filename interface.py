@@ -225,12 +225,6 @@ class GrammarCheckerGUI(QMainWindow):
             else:
                 raise Exception("Le fichier image n'a pas pu être généré par Graphviz.")
 
-    except Exception as e:
-            # affichage
-            self.grammar_display.setHtml(f'<img src="{image_path}">')
-
-            QMessageBox.information(self, "Succes", "Grammaire sauvegardee")
-
         except Exception as e:
             QMessageBox.critical(self, "Erreur", f"Erreur lors de la sauvegarde: {str(e)}")
 
