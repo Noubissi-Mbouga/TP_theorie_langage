@@ -64,45 +64,60 @@ def draw_nfa(nfa, filename="nfa"):
     return path
 
     
-import os
-import subprocess
-
-def draw_dfa(dfa, filename="dfa"):
-    # 1. On crée manuellement le code source DOT
-    dot_source = 'digraph DFA {\n    rankdir=LR;\n'
+def draw_dfa(dfa, filename="automate"):
+    """Génère un PNG à partir d'un objet automate sans utiliser le wrapper fragile."""
+    
+    # 1. Construction manuelle du code DOT (le langage de Graphviz)
+    dot_source = 'digraph DFA {\n    rankdir=LR;\n    node [fontname="Arial"];\n'
+    
+    # Définition des états (cercles doubles pour les finaux)
     for s in dfa.states:
         shape = 'doublecircle' if s in dfa.final_states else 'circle'
         dot_source += f'    "{s}" [shape={shape}];\n'
     
-    dot_source += '    "__start__" [shape=point];\n'
-    dot_source += f'    "__start__" -> "{dfa.start_state}";\n'
+    # Flèche d'entrée
+    dot_source += '    __start [shape=point, style=invis];\n'
+    dot_source += f'    __start -> "{dfa.start_state}";\n'
     
+    # Transitions
     for s, trans in dfa.transitions.items():
         for sym, tgt in trans.items():
             dot_source += f'    "{s}" -> "{tgt}" [label="{sym}"];\n'
+    
     dot_source += '}'
 
-    # 2. On écrit le fichier source .gv
-    gv_file = f"{filename}.gv"
-    png_file = f"{filename}.png"
+    # 2. Gestion des chemins de fichiers
+    # On force l'écriture dans le dossier courant de l'utilisateur
+    gv_file = os.path.abspath(f"{filename}.gv")
+    png_file = os.path.abspath(f"{filename}.png")
+
+    # Écriture du fichier source .gv
     with open(gv_file, 'w', encoding='utf-8') as f:
         f.write(dot_source)
 
-    # 3. On appelle dot.exe directement avec subprocess
+    # 3. Appel de l'exécutable DOT
     try:
-        # On essaie d'appeler 'dot' qui doit être dans le PATH grâce à interface.py
+        # On cherche l'exécutable 'dot.exe'
+        # Si on est dans l'EXE, le PATH configuré dans interface.py aidera à le trouver
+        executable = "dot"
+        
+        # Commande : dot -Tpng fichier.gv -o fichier.png
         result = subprocess.run(
-            ['dot', '-Tpng', gv_file, '-o', png_file],
+            [executable, '-Tpng', gv_file, '-o', png_file],
             capture_output=True,
             text=True,
-            shell=True # Important sous Windows
+            shell=True
         )
-        
+
         if os.path.exists(png_file):
-            return os.path.abspath(png_file)
+            # Optionnel : supprimer le fichier .gv après génération
+            try: os.remove(gv_file) 
+            except: pass
+            return png_file
         else:
-            print(f"Erreur rendu : {result.stderr}")
+            print(f"Erreur Graphviz STDERR: {result.stderr}")
             return None
+
     except Exception as e:
-        print(f"Erreur fatale : {e}")
+        print(f"Erreur d'exécution subprocess: {e}")
         return None
