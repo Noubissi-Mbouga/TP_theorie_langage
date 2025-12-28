@@ -52,7 +52,6 @@ def set_blue_theme(app):
     palette.setColor(QPalette.ColorRole.HighlightedText, Qt.GlobalColor.white)
 
     app.setPalette(palette)
-*
 
 
 class GrammarCheckerGUI(QMainWindow):
