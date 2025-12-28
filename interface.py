@@ -3,6 +3,12 @@
 import sys
 import os
 import shutil
+if getattr(sys, 'frozen', False):
+    # On définit le chemin vers les binaires inclus dans l'EXE
+    graphviz_bin_path = os.path.join(sys._MEIPASS, 'graphviz_bin')
+    # On l'ajoute au début du PATH pour être prioritaire
+    os.environ["PATH"] = graphviz_bin_path + os.pathsep + os.environ["PATH"]
+
 from PyQt6.QtWidgets import (QApplication,QMainWindow,QWidget,QVBoxLayout,QHBoxLayout,QLabel,QLineEdit,
 QTextEdit,QPushButton,QGroupBox,QMessageBox,QTabWidget)
 from PyQt6.QtCore import Qt
@@ -13,12 +19,6 @@ from PyQt6.QtWidgets import QStyleFactory
 from PyQt6 import QtGui
 from PyQt6.QtGui import QPixmap
 from PyQt6.QtGui import QPalette, QColor
-
-if getattr(sys, 'frozen', False):
-    # On indique à l'application où trouver dot.exe (dans le dossier temporaire)
-    os.environ["PATH"] += os.pathsep + os.path.join(sys._MEIPASS, 'graphviz_bin')
-
-# Ensuite seulement, tu importes tes fonctions
 from graphing import grammaire_vers_automate, draw_nfa, draw_dfa
 
 def formatter_regle(Rule):
