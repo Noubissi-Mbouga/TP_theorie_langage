@@ -213,9 +213,19 @@ class GrammarCheckerGUI(QMainWindow):
             self.ax_depart = axiom
 
             # génération automate
-            automate = grammaire_vers_automate(self.regle, self.ax_depart)
-            image_path = draw_dfa(automate, filename="automate")
+            filename = "automate_genere"
+            image_path = draw_dfa(automate, filename=filename)
 
+            # Vérification si le fichier a bien été créé
+            if image_path and os.path.exists(image_path):
+                # Utiliser QUrl pour s'assurer que le chemin est bien lu par le widget
+                from PyQt6.QtCore import QUrl
+                self.grammar_display.setHtml(f'<img src="{image_path}" width="400">')
+                QMessageBox.information(self, "Succès", "Grammaire sauvegardée et automate généré")
+            else:
+                raise Exception("Le fichier image n'a pas pu être généré par Graphviz.")
+
+    except Exception as e:
             # affichage
             self.grammar_display.setHtml(f'<img src="{image_path}">')
 
