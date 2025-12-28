@@ -26,13 +26,17 @@ jobs:
 
     - name: Build EXE with PyInstaller
       run: |
-        # On définit où se trouve Graphviz sur la machine GitHub
-        $G_BIN = "C:/Program Files/Graphviz/bin"
+        # On définit le chemin vers le dossier bin de Graphviz
+        $G_BIN = "C:\Program Files\Graphviz\bin"
         
-        # On crée l'exe en incluant les fichiers .exe et .dll de Graphviz
+        # On vérifie d'abord si le dossier existe pour éviter un build vide
+        if (Test-Path $G_BIN) { Write-Host "Graphviz trouvé dans $G_BIN" } else { Write-Error "Graphviz introuvable !" }
+
+        # On lance PyInstaller
+        # Note : On utilise des doubles quotes pour la variable et on s'assure d'inclure les DLLs
         pyinstaller --onefile --windowed `
-          --add-binary "${G_BIN}/*.exe;graphviz_bin" `
-          --add-binary "${G_BIN}/*.dll;graphviz_bin" `
+          --add-binary "$($G_BIN)\*.exe;graphviz_bin" `
+          --add-binary "$($G_BIN)\*.dll;graphviz_bin" `
           interface.py
     - name: Upload Artifact
       uses: actions/upload-artifact@v4 # C'est ICI que l'erreur se trouvait (v3 -> v4)
