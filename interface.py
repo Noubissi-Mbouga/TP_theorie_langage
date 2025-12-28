@@ -19,7 +19,7 @@ if getattr(sys, 'frozen', False):
     os.environ["PATH"] += os.pathsep + os.path.join(sys._MEIPASS, 'graphviz_bin')
 
 # Ensuite seulement, tu importes tes fonctions
-from graphing import draw_nfa, draw_dfa
+from graphing import grammaire_vers_automate, draw_nfa, draw_dfa
 
 def formatter_regle(Rule):
     regle={}
