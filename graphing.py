@@ -64,27 +64,45 @@ def draw_nfa(nfa, filename="nfa"):
     return path
 
     
+import os
+import subprocess
+
 def draw_dfa(dfa, filename="dfa"):
-    dot = Digraph(comment="DFA", format="png")
-    dot.attr(rankdir='LR')
+    # 1. On crée manuellement le code source DOT
+    dot_source = 'digraph DFA {\n    rankdir=LR;\n'
     for s in dfa.states:
         shape = 'doublecircle' if s in dfa.final_states else 'circle'
-        dot.node(s, shape=shape)
-    dot.node('__start__', shape='point')
-    dot.edge('__start__', dfa.start_state, label='')
+        dot_source += f'    "{s}" [shape={shape}];\n'
+    
+    dot_source += '    "__start__" [shape=point];\n'
+    dot_source += f'    "__start__" -> "{dfa.start_state}";\n'
+    
     for s, trans in dfa.transitions.items():
         for sym, tgt in trans.items():
-            dot.edge(s, tgt, label=sym)
-    path = dot.render(filename, format="png", cleanup=True)
-    print(path)
-    return path
+            dot_source += f'    "{s}" -> "{tgt}" [label="{sym}"];\n'
+    dot_source += '}'
 
+    # 2. On écrit le fichier source .gv
+    gv_file = f"{filename}.gv"
+    png_file = f"{filename}.png"
+    with open(gv_file, 'w', encoding='utf-8') as f:
+        f.write(dot_source)
 
-
-
-
-
-
-
-
-
+    # 3. On appelle dot.exe directement avec subprocess
+    try:
+        # On essaie d'appeler 'dot' qui doit être dans le PATH grâce à interface.py
+        result = subprocess.run(
+            ['dot', '-Tpng', gv_file, '-o', png_file],
+            capture_output=True,
+            text=True,
+            shell=True # Important sous Windows
+        )
+        
+        if os.path.exists(png_file):
+            return os.path.abspath(png_file)
+        else:
+            print(f"Erreur rendu : {result.stderr}")
+            return None
+    except Exception as e:
+        print(f"Erreur fatale : {e}")
+        return None
